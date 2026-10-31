@@ -129,11 +129,11 @@ try {
     .waitFor();
   assert.match(
     await page.locator(".opportunity-time").innerText(),
-    /Sun 01 Nov/,
+    /Sun,? 01 Nov/,
   );
   assert.match(
     await page.locator(".opportunity-time").innerText(),
-    /Sat 31 Oct.*Site: Pacific\/Honolulu/,
+    /Sat,? 31 Oct.*Site: Pacific\/Honolulu/,
   );
   await page.getByLabel("City or postal code").fill("Missing city");
   await page.unroute("https://geocoding-api.open-meteo.com/**");
