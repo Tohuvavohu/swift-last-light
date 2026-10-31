@@ -36,6 +36,39 @@ export type ProviderResult = {
   errors: { source: string; message: string }[];
   fetchedAt: string;
 };
+// Never replace a successful retrieval with an older bundled fallback. A
+// retained record keeps its original timestamp and explicitly becomes cached.
+export function mergeForecasts(
+  previous: Forecast[],
+  incoming: Forecast[],
+): Forecast[] {
+  const result = incoming.map((next) => {
+    const old = previous.find((f) => f.id === next.id);
+    return next.status === "snapshot" &&
+      old &&
+      Date.parse(old.fetchedAt) > Date.parse(next.fetchedAt)
+      ? { ...old, status: "snapshot" as const }
+      : next;
+  });
+  for (const old of previous) {
+    if (!result.some((f) => f.id === old.id))
+      result.push({ ...old, status: "snapshot" });
+  }
+  return result;
+}
+
+export function forecastWarning(f: Forecast, now: number): string | null {
+  const basis = f.orbitEpoch || f.issuedAt;
+  const age = basis ? (now - Date.parse(basis)) / 3600000 : 0;
+  const notes = [];
+  if (f.status === "snapshot")
+    notes.push("Saved forecast; no successful source update.");
+  if (age > 24)
+    notes.push(
+      `Forecast inputs are ${Math.floor(age)} h old; retrieval time does not indicate a new prediction.`,
+    );
+  return notes.join(" ") || null;
+}
 export const aerospaceSnapshot: Forecast = {
   id: "aerospace",
   source: "Aerospace · CORDS",
@@ -189,16 +222,55 @@ export async function fetchPublic(url: string): Promise<string> {
 
 let tleCache: { time: number; value: ReturnType<typeof parseTLE> } | undefined;
 let predictionCache: { time: number; value: ProviderResult } | undefined;
+let tleFlight: Promise<ReturnType<typeof parseTLE>> | undefined;
+let predictionFlight: Promise<ProviderResult> | undefined;
+let tleFailure: { time: number; message: string } | undefined;
 export async function getElements() {
   if (tleCache && Date.now() - tleCache.time < 15 * 60000)
     return tleCache.value;
-  const value = parseTLE(await fetchPublic(URLS.celestrak), "CelesTrak");
-  tleCache = { time: Date.now(), value };
-  return value;
+  const fallback = () => {
+    if (tleCache)
+      return {
+        ...tleCache.value,
+        snapshot: true,
+        refreshError: tleFailure!.message,
+      };
+    throw Error(tleFailure!.message);
+  };
+  if (tleFailure && Date.now() - tleFailure.time < 60000) return fallback();
+  if (tleFlight) return tleFlight;
+  tleFlight = (async () => {
+    try {
+      const value = parseTLE(await fetchPublic(URLS.celestrak), "CelesTrak");
+      tleCache = { time: Date.now(), value };
+      tleFailure = undefined;
+      return value;
+    } catch (error) {
+      tleFailure = {
+        time: Date.now(),
+        message: error instanceof Error ? error.message : "TLE unavailable",
+      };
+      return fallback();
+    }
+  })();
+  try {
+    return await tleFlight;
+  } finally {
+    tleFlight = undefined;
+  }
 }
 export async function getForecasts(): Promise<ProviderResult> {
   if (predictionCache && Date.now() - predictionCache.time < 15 * 60000)
     return predictionCache.value;
+  if (predictionFlight) return predictionFlight;
+  predictionFlight = refreshForecasts();
+  try {
+    return await predictionFlight;
+  } finally {
+    predictionFlight = undefined;
+  }
+}
+async function refreshForecasts(): Promise<ProviderResult> {
   const results = await Promise.allSettled([
     fetchPublic(URLS.michiganData).then((t) => parseMichigan(JSON.parse(t))),
     fetchPublic(URLS.aerospace).then(parseAerospace),
@@ -216,7 +288,14 @@ export async function getForecasts(): Promise<ProviderResult> {
       if (i) forecasts.push(aerospaceSnapshot);
     }
   });
-  const value = { forecasts, errors, fetchedAt: new Date().toISOString() };
+  const value = {
+    forecasts: mergeForecasts(
+      predictionCache?.value.forecasts || [],
+      forecasts,
+    ),
+    errors,
+    fetchedAt: new Date().toISOString(),
+  };
   predictionCache = { time: Date.now(), value };
   return value;
 }

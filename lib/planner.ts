@@ -1,10 +1,13 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { parsePublishedData } from "./published-data";
 import {
   findPasses,
+  compass,
   makeSampler,
   parseTLE,
   photoPeak,
+  passesAtTime,
   visibleSeconds,
   type Elements,
   type Observer,
@@ -14,6 +17,7 @@ import {
 import {
   aerospaceSnapshot,
   normalizeForecast,
+  mergeForecasts,
   snapshotElements,
   utc,
   type Forecast,
@@ -36,6 +40,30 @@ export const PLACES: Observer[] = [
     height: 20,
   },
 ];
+const PLACE_ZONES = [
+  "Pacific/Honolulu",
+  "America/New_York",
+  "America/Puerto_Rico",
+  "America/Mexico_City",
+  "Australia/Brisbane",
+  "Asia/Singapore",
+  "Asia/Kolkata",
+  "America/Sao_Paulo",
+  "Africa/Nairobi",
+  "America/Los_Angeles",
+];
+PLACES.forEach((place, i) => {
+  place.timezone = PLACE_ZONES[i];
+});
+export function validTimezone(value: unknown): string | undefined {
+  if (typeof value !== "string") return;
+  try {
+    new Intl.DateTimeFormat("en", { timeZone: value });
+    return value;
+  } catch {
+    return;
+  }
+}
 export const fmt = (value: number | string, zone = "UTC", full = false) =>
   new Intl.DateTimeFormat("en-GB", {
     timeZone: zone,
@@ -90,10 +118,15 @@ export function usePlanner() {
     start: 0,
     allowStale: false,
   });
+  const [liveSearch, setLiveSearch] = useState(true),
+    [deviceZone, setDeviceZone] = useState("UTC"),
+    [locating, setLocating] = useState(false),
+    [locationError, setLocationError] = useState("");
   const [forecasts, setForecasts] = useState<Forecast[]>([aerospaceSnapshot]),
     [custom, setCustom] = useState<Forecast[]>([]),
     [errors, setErrors] = useState<ProviderResult["errors"]>([]),
     [tleError, setTleError] = useState("");
+  const [publishedAt, setPublishedAt] = useState<string | null>(null);
   const [busy, setBusy] = useState(false),
     [computing, setComputing] = useState(false),
     [result, setResult] = useState<ReturnType<typeof findPasses> | null>(null),
@@ -102,59 +135,70 @@ export function usePlanner() {
     [anchor, setAnchor] = useState<number | null>(null),
     [notice, setNotice] = useState("");
   const manual = useRef(false),
-    version = useRef(0);
+    version = useRef(0),
+    forecastVersion = useRef(0);
   async function refresh(replaceManual = false) {
-    const seq = ++version.current;
+    const seq = ++version.current,
+      forecastSeq = ++forecastVersion.current;
     setBusy(true);
-    await Promise.allSettled([
-      (async () => {
-        try {
-          const response = await fetch("/api/tle");
-          const data = (await response.json()) as Elements & { error?: string };
-          if (!response.ok) throw Error(data.error);
-          const valid = parseTLE(`${data.line1}\n${data.line2}`, data.source);
-          if (seq === version.current && (!manual.current || replaceManual)) {
-            const next = { ...valid, fetchedAt: data.fetchedAt };
-            setElements(next);
-            save("swift-elements", next);
-            manual.current = false;
-            setTleError("");
-          }
-        } catch (e) {
-          setTleError(e instanceof Error ? e.message : "TLE unavailable");
-        }
-      })(),
-      (async () => {
-        try {
-          const response = await fetch("/api/forecasts");
-          if (!response.ok) throw Error("Forecast refresh failed.");
-          const data: ProviderResult = await response.json();
-          setForecasts(data.forecasts);
-          setErrors(data.errors);
-          save("swift-forecasts", data.forecasts);
-        } catch (e) {
-          setErrors([
-            {
-              source: "Forecast feeds",
-              message: e instanceof Error ? e.message : "Unavailable",
-            },
-          ]);
-        }
-      })(),
-    ]);
-    if (seq === version.current) setBusy(false);
+    try {
+      const response = await fetch(
+        `${import.meta.env.BASE_URL}data/latest.json`,
+        {
+          signal: AbortSignal.timeout(20000),
+          cache: "no-cache",
+        },
+      );
+      if (!response.ok)
+        throw Error(`Published data unavailable (HTTP ${response.status}).`);
+      const data = parsePublishedData(await response.json());
+      if (forecastSeq !== forecastVersion.current) return;
+      if (seq === version.current && (!manual.current || replaceManual)) {
+        setElements(data.tle);
+        save("swift-elements", data.tle);
+        manual.current = false;
+        setTleError(data.tle.refreshError || "");
+      }
+      setForecasts((previous) => {
+        const next = mergeForecasts(previous, data.forecasts);
+        save("swift-forecasts", next);
+        return next;
+      });
+      setErrors(data.errors);
+      setPublishedAt(data.checkedAt);
+      save("swift-published-at", data.checkedAt);
+    } catch (e) {
+      if (forecastSeq !== forecastVersion.current) return;
+      const message =
+        e instanceof Error ? e.message : "Published data unavailable.";
+      if (seq === version.current) setTleError(message);
+      setForecasts((previous) => {
+        const next = mergeForecasts(previous, []);
+        save("swift-forecasts", next);
+        return next;
+      });
+      setErrors([{ source: "Published data", message }]);
+    } finally {
+      if (forecastSeq === forecastVersion.current) setBusy(false);
+    }
   }
+
   useEffect(() => {
     const time = Date.now();
     setNow(time);
+    setDeviceZone(Intl.DateTimeFormat().resolvedOptions().timeZone);
     setSettings((s) => ({ ...s, start: time }));
+    try {
+      const checked = read("swift-published-at");
+      if (checked) setPublishedAt(utc(checked));
+    } catch {}
     const stored = read("swift-elements");
     try {
       setElements(
         stored
           ? {
               ...parseTLE(`${stored.line1}\n${stored.line2}`, stored.source),
-              fetchedAt: stored.fetchedAt,
+              fetchedAt: utc(stored.fetchedAt),
               snapshot: true,
             }
           : snapshotElements(),
@@ -169,7 +213,7 @@ export function usePlanner() {
           cached.map((x) => ({
             ...normalizeForecast(x),
             status: "snapshot",
-            fetchedAt: x.fetchedAt,
+            fetchedAt: utc(x.fetchedAt),
           })),
         );
       } catch {}
@@ -200,15 +244,21 @@ export function usePlanner() {
         lat,
         lon,
         height: Number.isFinite(saved?.height) ? saved.height : 0,
+        timezone: query.has("lat") ? undefined : validTimezone(saved?.timezone),
       });
       setExample(false);
     }
     void refresh();
     const timer = setInterval(() => setNow(Date.now()), 30000),
       feedTimer = setInterval(() => void refresh(), 900000);
+    const onReturn = () => {
+      if (document.visibilityState === "visible") setNow(Date.now());
+    };
+    document.addEventListener("visibilitychange", onReturn);
     return () => {
       clearInterval(timer);
       clearInterval(feedTimer);
+      document.removeEventListener("visibilitychange", onReturn);
     };
   }, []);
   const allForecasts = useMemo(
@@ -224,19 +274,29 @@ export function usePlanner() {
     );
     return t.length ? Math.min(...t) : undefined;
   }, [allForecasts]);
+  const searchStart = liveSearch
+    ? Math.max(settings.start, Math.floor(now / 60000) * 60000)
+    : settings.start;
   useEffect(() => {
     if (!elements || !settings.start) return;
     let cancelled = false;
     setComputing(true);
     const timer = setTimeout(() => {
       try {
-        const next = findPasses(elements, observer, settings, earliest);
+        const next = findPasses(
+          elements,
+          observer,
+          { ...settings, start: searchStart },
+          earliest,
+        );
         if (!cancelled) {
           setResult(next);
-          setSelectedId(null);
         }
       } catch (e) {
-        if (!cancelled) setNotice(String(e));
+        if (!cancelled) {
+          setResult(null);
+          setNotice(String(e));
+        }
       } finally {
         if (!cancelled) setComputing(false);
       }
@@ -245,19 +305,31 @@ export function usePlanner() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [elements, observer, settings, earliest]);
+  }, [elements, observer, settings, earliest, searchStart]);
+  useEffect(() => {
+    setSelectedId(null);
+    setAnchor(null);
+    setOffset(0);
+  }, [elements, observer, settings]);
   useEffect(() => {
     if (!notice) return;
     const t = setTimeout(() => setNotice(""), 7000);
     return () => clearTimeout(t);
   }, [notice]);
-  const passes = result?.passes || [],
+  const passes = passesAtTime(result?.passes || [], now, liveSearch),
     visible = passes.filter((p) => visibleSeconds(p) >= 10),
     selected =
       passes.find((p) => p.id === selectedId) ||
       visible[0] ||
       passes[0] ||
       null;
+  useEffect(() => {
+    if (selectedId && !passes.some((p) => p.id === selectedId)) {
+      setSelectedId(null);
+      setAnchor(null);
+      setOffset(0);
+    }
+  }, [selectedId, result, now, liveSearch]);
   const mapTime = (anchor ?? now) + offset * 60000,
     age = elements && now ? (now - Date.parse(elements.epoch)) / 3600000 : 0;
   const usable =
@@ -272,25 +344,32 @@ export function usePlanner() {
   function chooseLocation(next: Observer) {
     setObserver(next);
     setExample(false);
+    setLocationError("");
     save("swift-observer", next);
   }
   function geolocate() {
     if (!navigator.geolocation)
-      return setNotice(
-        "Geolocation unavailable. Use coordinates or click the map.",
+      return setLocationError(
+        "Geolocation unavailable. Search for a city, use coordinates, or click the map.",
       );
+    setLocating(true);
+    setLocationError("");
     navigator.geolocation.getCurrentPosition(
-      (p) =>
+      (p) => {
+        setLocating(false);
         chooseLocation({
           name: "My location",
           lat: p.coords.latitude,
           lon: p.coords.longitude,
           height: p.coords.altitude || 0,
-        }),
-      () =>
-        setNotice(
-          "Location access unavailable. Enter coordinates or click the map.",
-        ),
+        });
+      },
+      () => {
+        setLocating(false);
+        setLocationError(
+          "Location access unavailable. Search for a city, enter coordinates, or click the map.",
+        );
+      },
       { timeout: 10000 },
     );
   }
@@ -304,7 +383,12 @@ export function usePlanner() {
       (key === "height" && n < -500)
     )
       return setNotice("Enter valid coordinates or height.");
-    chooseLocation({ ...observer, name: "Custom location", [key]: n });
+    chooseLocation({
+      ...observer,
+      name: "Custom location",
+      timezone: key === "height" ? observer.timezone : undefined,
+      [key]: n,
+    });
   }
   function installTLE(text: string, source = "Manual TLE") {
     const next = parseTLE(text, source);
@@ -362,7 +446,7 @@ export function usePlanner() {
         "overlaps_reentry_window",
       ],
     ];
-    for (const p of visible)
+    for (const p of passesAtTime(visible, Date.now(), liveSearch))
       for (const w of p.windows)
         rows.push(
           [
@@ -391,6 +475,11 @@ export function usePlanner() {
     );
   }
   function exportCalendar(p: Pass) {
+    const windows = p.windows.filter((w) => w.end.time > Date.now());
+    if (!windows.length)
+      return setNotice(
+        "This observing window has ended. Choose an upcoming pass.",
+      );
     const stamp = (t: number) =>
       new Date(t)
         .toISOString()
@@ -401,7 +490,7 @@ export function usePlanner() {
       "VERSION:2.0",
       "PRODID:-//Swift Last Light//EN",
     ];
-    for (const w of p.windows)
+    for (const w of windows)
       lines.push(
         "BEGIN:VEVENT",
         `UID:swift-${Math.round(w.start.time)}@lastlight`,
@@ -409,14 +498,15 @@ export function usePlanner() {
         `DTSTART:${stamp(w.start.time)}`,
         `DTEND:${stamp(w.end.time)}`,
         "SUMMARY:Photograph Swift - refresh TLE before observing",
-        `DESCRIPTION:Lat ${observer.lat.toFixed(4)} / lon ${observer.lon.toFixed(4)}.`,
+        `DESCRIPTION:Look ${compass(w.start.azimuth)} to ${compass(w.end.azimuth)}. Peak ${w.peak.elevation.toFixed(0)} deg. TLE ${elements?.epoch}. Refresh before observing. Brightness and weather not modeled.`,
         `GEO:${observer.lat};${observer.lon}`,
         "END:VEVENT",
       );
     lines.push("END:VCALENDAR");
     download(
       "swift-observation.ics",
-      lines.join("\r\n") + "\r\n",
+      lines.map((line) => line.match(/.{1,73}/g)!.join("\r\n ")).join("\r\n") +
+        "\r\n",
       "text/calendar",
     );
   }
@@ -431,14 +521,30 @@ export function usePlanner() {
     setSelectedId(null);
     setNow(Date.now());
   }
+  function searchFromNow() {
+    const time = Date.now();
+    setNow(time);
+    setLiveSearch(true);
+    setSettings((s) => ({ ...s, start: time }));
+  }
   return {
     now,
     elements,
     observer,
     example,
+    locating,
+    locationError,
+    deviceZone,
+    liveSearch,
+    searchStart,
+    searchFromNow,
     settings,
-    update: (s: Partial<Settings>) => setSettings((v) => ({ ...v, ...s })),
+    update: (s: Partial<Settings>) => {
+      if (s.start !== undefined) setLiveSearch(false);
+      setSettings((v) => ({ ...v, ...s }));
+    },
     allForecasts,
+    publishedAt,
     custom,
     errors,
     tleError,

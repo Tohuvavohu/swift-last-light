@@ -8,6 +8,7 @@ export type Observer = {
   lat: number;
   lon: number;
   height: number;
+  timezone?: string;
 };
 export type Elements = {
   name: string;
@@ -17,6 +18,7 @@ export type Elements = {
   source: string;
   fetchedAt: string;
   snapshot?: boolean;
+  refreshError?: string;
 };
 export type Point = {
   time: number;
@@ -386,6 +388,17 @@ export function compass(az: number) {
 }
 export const visibleSeconds = (p: Pass) =>
   p.windows.reduce((n, w) => n + (w.end.time - w.start.time) / 1000, 0);
+// Fixed-date searches retain history; live searches exclude ended passes and
+// ended illumination windows even between expensive orbit recalculations.
+export function passesAtTime(passes: Pass[], now: number, live: boolean) {
+  if (!live) return passes;
+  return passes
+    .filter((p) => p.end.time > now)
+    .map((p) => ({
+      ...p,
+      windows: p.windows.filter((w) => w.end.time > now),
+    }));
+}
 export const photoPeak = (p: Pass) =>
   p.windows.length
     ? p.windows

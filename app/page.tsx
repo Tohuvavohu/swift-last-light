@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ArrowDownToLine,
   ArrowRight,
@@ -11,7 +11,6 @@ import {
   LocateFixed,
   MapPin,
   Moon,
-  Orbit,
   Radio,
   RefreshCw,
   Satellite,
@@ -21,7 +20,11 @@ import {
 } from "lucide-react";
 import OrbitMap from "@/components/orbit-map";
 import SkyChart from "@/components/sky-chart";
-import { DataPanel, Forecasts } from "@/components/data-panel";
+import { DataPanel, Forecasts, ReentrySummary } from "@/components/data-panel";
+import {
+  LocationPicker,
+  ObservationBrief,
+} from "@/components/observation-brief";
 import { compass, photoPeak, visibleSeconds } from "@/lib/orbit";
 import {
   dateLabel,
@@ -47,12 +50,14 @@ export default function Home() {
             setTab("planner");
           }}
         >
-          <span className="brand-symbol">
-            <Orbit size={25} />
-          </span>
-          <span>
-            SWIFT<span className="brand-sub">LAST LIGHT</span>
-          </span>
+          <img
+            className="brand-logo"
+            src={`${import.meta.env.BASE_URL}swift-logo.gif`}
+            alt="Swift mission logo"
+            width={648}
+            height={335}
+          />
+          <span className="brand-sub">LAST LIGHT</span>
         </a>
         <nav aria-label="Main navigation">
           <button
@@ -101,29 +106,25 @@ export default function Home() {
             onClick={() => void p.refresh(true)}
           >
             <RefreshCw size={15} className={p.busy ? "spinning" : ""} />
-            {p.busy ? "Refreshing sources" : "Refresh live data"}
+            {p.busy ? "Checking published data" : "Refresh published data"}
           </button>
         </div>
       </div>
-      <div className="mission-strip">
-        <span className="pill amber">
-          <Radio size={13} />
-          REENTRY WATCH
-        </span>
-        <p>
-          Swift is descending. Refresh orbital elements before heading out; pass
-          timing can shift rapidly.
-        </p>
-        <button
-          onClick={() =>
-            document
-              .getElementById("forecasts")
-              ?.scrollIntoView({ behavior: "smooth" })
-          }
-        >
-          Compare forecasts <ArrowRight size={14} />
-        </button>
-      </div>
+      <p
+        className={`publication-note ${p.publishedAt && p.now - Date.parse(p.publishedAt) > 45 * 60000 ? "warning" : ""}`}
+        role="status"
+      >
+        {p.publishedAt
+          ? `Last source check: ${fmt(p.publishedAt, "UTC", true)} UTC.`
+          : "Loading the latest published source check."}{" "}
+        Updates are scheduled about every 15 minutes; delays are possible.
+        Refresh reads the latest published data.
+        {p.publishedAt &&
+          p.now - Date.parse(p.publishedAt) > 45 * 60000 &&
+          " Source checks are overdue. Verify the orbit epoch or import a newer TLE."}
+      </p>
+      {tab === "planner" && <LocationPicker p={p} />}
+      <ReentrySummary p={p} />
       {p.elements &&
         (p.age > 12 || p.age < -1 || p.elements.snapshot || p.tleError) && (
           <div className="data-alert">
@@ -152,6 +153,7 @@ export default function Home() {
         <DataPanel p={p} />
       ) : (
         <>
+          <ObservationBrief p={p} />
           <section className="workspace">
             <Controls p={p} />
             <div className="map-column">
@@ -271,8 +273,14 @@ export default function Home() {
       <Forecasts p={p} />
       <footer>
         <span>
-          <Orbit size={17} />
-          SWIFT · LAST LIGHT
+          <img
+            className="footer-mission-logo"
+            src={`${import.meta.env.BASE_URL}swift-logo.gif`}
+            alt="Swift"
+            width={648}
+            height={335}
+          />
+          LAST LIGHT
         </span>
         <p>
           SGP4 orbital propagation · Sun / Earth shadow geometry · Built for the
@@ -304,7 +312,8 @@ function Controls({ p }: { p: Planner }) {
         <button
           className="icon-button"
           onClick={p.geolocate}
-          aria-label="Use my location"
+          disabled={p.locating}
+          aria-label="Use my location from controls"
           title="Use my location"
         >
           <LocateFixed size={17} />
@@ -412,20 +421,19 @@ function Controls({ p }: { p: Planner }) {
           <Clock3 size={16} />
           SEARCH WINDOW
         </span>
-        <button
-          className="text-button"
-          onClick={() => p.update({ start: Date.now() })}
-        >
+        <button className="text-button" onClick={p.searchFromNow}>
           From now
         </button>
       </div>
       <label className="field">
-        Start time · UTC
+        {p.liveSearch
+          ? "Start time · UTC · rolling"
+          : "Start time · UTC · fixed"}
         <input
           type="datetime-local"
           value={
-            p.settings.start
-              ? new Date(p.settings.start).toISOString().slice(0, 16)
+            p.searchStart
+              ? new Date(p.searchStart).toISOString().slice(0, 16)
               : ""
           }
           onChange={(e) => {
@@ -434,6 +442,11 @@ function Controls({ p }: { p: Planner }) {
           }}
         />
       </label>
+      <p className="small muted search-mode-note">
+        {p.liveSearch
+          ? "Advances automatically; completed passes are removed."
+          : "Fixed-date search includes historical passes. Choose From now to resume live planning."}
+      </p>
       <div className="segmented">
         {[12, 24, 48, 72].map((h) => (
           <button
@@ -472,13 +485,18 @@ function Passes({ p }: { p: Planner }) {
     shown = onlyVisible ? p.visible : p.passes,
     selected = p.selected,
     peak = selected ? photoPeak(selected) : null;
+  useEffect(() => {
+    if (zone !== "UTC" && zone !== p.deviceZone && zone !== p.observer.timezone)
+      setZone("UTC");
+  }, [p.deviceZone, p.observer.timezone, zone]);
   return (
-    <section className="passes-section">
+    <section className="passes-section" id="passes">
       <div className="section-heading">
         <div>
           <div className="eyebrow">PLAN THE SHOT</div>
           <h2>
-            Upcoming passes <span className="count">{p.visible.length}</span>
+            {p.liveSearch ? "Upcoming passes" : "Passes in selected window"}{" "}
+            <span className="count">{p.visible.length}</span>
           </h2>
           <p>
             {p.observer.name} · {p.settings.minimum}° minimum elevation · Sun
@@ -500,15 +518,14 @@ function Passes({ p }: { p: Planner }) {
             onChange={(e) => setZone(e.target.value)}
           >
             <option value="UTC">UTC</option>
-            <option
-              value={
-                typeof window !== "undefined"
-                  ? Intl.DateTimeFormat().resolvedOptions().timeZone
-                  : "Etc/UTC"
-              }
-            >
-              My device time
-            </option>
+            {p.observer.timezone && p.observer.timezone !== "UTC" && (
+              <option value={p.observer.timezone}>
+                Site time · {p.observer.timezone}
+              </option>
+            )}
+            {p.deviceZone !== "UTC" && p.deviceZone !== p.observer.timezone && (
+              <option value={p.deviceZone}>Device time · {p.deviceZone}</option>
+            )}
           </select>
           <button
             className="button secondary compact"
@@ -564,7 +581,14 @@ function Passes({ p }: { p: Planner }) {
         <div className="pass-layout">
           <div className="pass-list">
             <div className="pass-table-head">
-              <span>START · {zone === "UTC" ? "UTC" : "DEVICE"}</span>
+              <span>
+                START ·{" "}
+                {zone === "UTC"
+                  ? "UTC"
+                  : zone === p.observer.timezone
+                    ? "SITE"
+                    : "DEVICE"}
+              </span>
               <span>MAX ELEV.</span>
               <span>PHOTO TIME</span>
               <span>LOOK TOWARD</span>
@@ -580,7 +604,15 @@ function Passes({ p }: { p: Planner }) {
                 >
                   <span>
                     <strong>{fmt(w?.start.time ?? v.start.time, zone)}</strong>
-                    <small>{dateLabel(v.start.time, zone)}</small>
+                    <small>
+                      {dateLabel(w?.start.time ?? v.start.time, zone)}
+                    </small>
+                    {w && w.start.time <= p.now && w.end.time > p.now && (
+                      <em>In progress</em>
+                    )}
+                    {(w?.end.time ?? v.end.time) <= p.now && (
+                      <em>Completed · historical</em>
+                    )}
                     {v.conditional && <em>Reentry-window overlap</em>}
                     {Math.abs(v.ageHours) > 24 && (
                       <em>Exploratory · old TLE</em>
@@ -638,7 +670,7 @@ function Passes({ p }: { p: Planner }) {
                     {compass(peak.azimuth)} · {fmt(peak.time, zone)}
                   </p>
                   <span className="small muted">
-                    Sky view · green is photographable
+                    Sky view · green meets geometric conditions
                   </span>
                 </div>
               </div>
@@ -671,7 +703,7 @@ function Passes({ p }: { p: Planner }) {
               </p>
               <button
                 className="button secondary"
-                disabled={!selected.windows.length}
+                disabled={!selected.windows.some((w) => w.end.time > p.now)}
                 onClick={() => p.exportCalendar(selected)}
               >
                 <ArrowDownToLine size={14} />
@@ -685,15 +717,21 @@ function Passes({ p }: { p: Planner }) {
   );
 }
 function Method({ close }: { close: () => void }) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    dialog.current?.showModal();
+  }, []);
   return (
-    <div className="modal-backdrop" onClick={close}>
-      <div
-        className="modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="method-title"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <dialog
+      className="method-dialog"
+      ref={dialog}
+      aria-labelledby="method-title"
+      onCancel={close}
+      onClick={(e) => {
+        if (e.target === e.currentTarget) close();
+      }}
+    >
+      <div className="modal" onClick={(e) => e.stopPropagation()}>
         <button
           className="icon-button modal-close"
           onClick={close}
@@ -748,15 +786,19 @@ function Method({ close }: { close: () => void }) {
           table. Tracks show 45 minutes behind and 100 minutes ahead.
         </p>
         <p>
-          “My device time” uses the browser timezone, not the observing
-          location. Calendar exports use UTC. Refresh the elements shortly
-          before observing and allow timing margin. Public feeds refresh every
-          15 minutes while this page is open.
+          Site time uses the timezone supplied by the city search or preset.
+          Device time uses the browser timezone; it is explicitly labeled when a
+          site timezone is unknown. Calendar exports use UTC. Refresh the
+          elements shortly before observing and allow timing margin. Public
+          feeds refresh every 15 minutes while this page is open by reading the
+          latest published data. Scheduled source updates can be delayed; check
+          the source-check timestamp and orbit epoch. Refresh does not trigger
+          an upstream fetch. Manual imports remain available.
         </p>
         <button className="button primary" onClick={close}>
           Back to the sky <ArrowRight size={15} />
         </button>
       </div>
-    </div>
+    </dialog>
   );
 }

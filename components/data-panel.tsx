@@ -1,8 +1,15 @@
 "use client";
 import { useState } from "react";
-import { ArrowDownToLine, ChevronDown, ExternalLink, Info } from "lucide-react";
+import {
+  ArrowDownToLine,
+  ArrowRight,
+  ChevronDown,
+  ExternalLink,
+  Info,
+  Radio,
+} from "lucide-react";
 import { dateLabel, download, fmt, type Planner } from "@/lib/planner";
-import { URLS, type Forecast } from "@/lib/sources";
+import { URLS, forecastWarning, type Forecast } from "@/lib/sources";
 
 export function DataPanel({ p }: { p: Planner }) {
   const [tle, setTle] = useState(""),
@@ -53,7 +60,7 @@ export function DataPanel({ p }: { p: Planner }) {
         <div className="eyebrow">ORBIT INPUT</div>
         <h2>Keep the track current.</h2>
         <p>
-          Live elements come from CelesTrak. Paste a newer Swift TLE from
+          Published elements come from CelesTrak. Paste a newer Swift TLE from
           Space-Track or another trusted provider.
         </p>
         <div className="source-meta">
@@ -261,6 +268,114 @@ export function DataPanel({ p }: { p: Planner }) {
   );
 }
 
+export function ReentrySummary({ p }: { p: Planner }) {
+  return (
+    <section
+      className="reentry-summary"
+      aria-labelledby="reentry-summary-title"
+    >
+      <div className="reentry-summary-heading">
+        <div>
+          <span className="pill amber">
+            <Radio size={13} />
+            REENTRY WATCH
+          </span>
+          <h2 id="reentry-summary-title">
+            Estimated reentry <span>UTC</span>
+          </h2>
+        </div>
+        <a className="text-button" href="#forecasts">
+          Compare forecasts <ArrowRight size={14} />
+        </a>
+      </div>
+      <div className="reentry-estimates">
+        {p.allForecasts.map((f) => (
+          <article className="reentry-estimate" key={f.id}>
+            <div className="reentry-estimate-source">
+              <a href={f.url} target="_blank" rel="noreferrer">
+                {f.source}
+                <ExternalLink size={12} />
+              </a>
+              <span
+                className={`pill ${f.status === "live" ? "mint" : "amber"}`}
+              >
+                {f.status === "live"
+                  ? "FETCHED"
+                  : f.status === "snapshot"
+                    ? "SNAPSHOT"
+                    : "MANUAL"}
+              </span>
+            </div>
+            <strong className="reentry-estimate-time">
+              <time dateTime={f.nominal}>{fmt(f.nominal, "UTC", true)}</time>{" "}
+              <small>UTC</small>
+            </strong>
+            <p className="reentry-estimate-bounds">
+              <span>Uncertainty window</span>
+              {f.earliest && f.latest ? (
+                <strong>
+                  <time dateTime={f.earliest}>
+                    {fmt(f.earliest, "UTC", true)}
+                  </time>{" "}
+                  —{" "}
+                  <time dateTime={f.latest}>{fmt(f.latest, "UTC", true)}</time>{" "}
+                  UTC
+                </strong>
+              ) : (
+                <strong>Bounds not provided</strong>
+              )}
+            </p>
+            <p className="reentry-estimate-confidence">{f.confidence}</p>
+            <p className="reentry-estimate-freshness">
+              {f.issuedAt
+                ? `Issued ${dateLabel(f.issuedAt)} · `
+                : f.orbitEpoch
+                  ? `Orbit ${fmt(f.orbitEpoch, "UTC", true)} UTC · `
+                  : ""}
+              {f.status === "manual"
+                ? "Imported"
+                : f.status === "snapshot"
+                  ? "Saved"
+                  : "Fetched"}{" "}
+              {fmt(f.fetchedAt, "UTC", true)} UTC
+            </p>
+            {forecastWarning(f, p.now) && (
+              <p className="forecast-freshness-warning">
+                {forecastWarning(f, p.now)}
+              </p>
+            )}
+            {p.now > Date.parse(f.latest || f.nominal) && (
+              <p className="warning small">
+                Forecast date has passed. Verify current object status.
+              </p>
+            )}
+          </article>
+        ))}
+        {!p.allForecasts.length && (
+          <p className="reentry-summary-empty">
+            No forecast is available. Refresh the sources or import a prediction
+            under Data & sources.
+          </p>
+        )}
+      </div>
+      {!!p.errors.length && (
+        <div className="forecast-refresh-notices" role="status">
+          {p.errors.map((e) => (
+            <p key={e.source}>
+              <strong>{e.source} refresh:</strong> {e.message} Last successful
+              data is retained when available.
+            </p>
+          ))}
+        </div>
+      )}
+      <p className="reentry-summary-note">
+        Independent estimates can shift. Refresh orbital elements before heading
+        out; pass timing can change rapidly.
+      </p>
+    </section>
+  );
+}
+
 export function Forecasts({ p }: { p: Planner }) {
   return (
     <section className="forecasts-section" id="forecasts">
@@ -322,6 +437,11 @@ export function Forecasts({ p }: { p: Planner }) {
               <span>Retrieved: {fmt(f.fetchedAt, "UTC", true)} UTC</span>
             </div>
             {f.note && <p className="small muted">{f.note}</p>}
+            {forecastWarning(f, p.now) && (
+              <p className="forecast-freshness-warning">
+                {forecastWarning(f, p.now)}
+              </p>
+            )}
             {p.now > Date.parse(f.latest || f.nominal) && (
               <p className="warning small">
                 Forecast date has passed. Verify current object status.

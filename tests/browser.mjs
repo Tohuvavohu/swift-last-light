@@ -9,11 +9,13 @@ const page = await browser.newPage({ viewport: { width: 1440, height: 1080 } });
 const errors = [];
 page.on("pageerror", (e) => errors.push(e.message));
 try {
-  await page.goto("http://127.0.0.1:5173/", { waitUntil: "networkidle" });
+  await page.goto(process.env.APP_URL || "http://127.0.0.1:5173/", {
+    waitUntil: "networkidle",
+  });
   await page.getByRole("heading", { name: "Catch the last light." }).waitFor();
   await page.locator(".leaflet-container").waitFor();
   await page
-    .getByRole("button", { name: "Refresh live data" })
+    .getByRole("button", { name: "Refresh published data" })
     .waitFor({ timeout: 25000 });
   await page.locator(".pass-row").first().waitFor({ timeout: 15000 });
   await page.locator(".pass-row").first().click();

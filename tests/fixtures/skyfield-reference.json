@@ -1,0 +1,653 @@
+{
+  "generator": "Skyfield 1.55, Python SGP4, JPL DE421; built-in timescale",
+  "line1": "1 28485U 04047A   26304.44767149  .01372254  13072-2  97041-3 0  9992",
+  "line2": "2 28485  20.5470 195.6831 0005005 286.9934  72.9973 16.15126897208442",
+  "points": [
+    {
+      "observer": {
+        "name": "Honolulu",
+        "lat": 21.3069,
+        "lon": -157.8583,
+        "height": 10
+      },
+      "time": "2026-10-31T19:00:00Z",
+      "elevation": -64.67848618186679,
+      "azimuth": 276.7963002659314,
+      "range": 11781.833339352323,
+      "sunAltitude": 30.3599747887734,
+      "sunlit": false
+    },
+    {
+      "observer": {
+        "name": "Honolulu",
+        "lat": 21.3069,
+        "lon": -157.8583,
+        "height": 10
+      },
+      "time": "2026-11-01T00:00:00Z",
+      "elevation": -35.15505946362674,
+      "azimuth": 255.92032232430864,
+      "range": 7718.838951536927,
+      "sunAltitude": 46.00138650248078,
+      "sunlit": true
+    },
+    {
+      "observer": {
+        "name": "Honolulu",
+        "lat": 21.3069,
+        "lon": -157.8583,
+        "height": 10
+      },
+      "time": "2026-11-01T05:01:00Z",
+      "elevation": 14.10215242517333,
+      "azimuth": 235.02030463583787,
+      "range": 757.2394668281232,
+      "sunAltitude": -15.687865352161714,
+      "sunlit": true
+    },
+    {
+      "observer": {
+        "name": "Honolulu",
+        "lat": 21.3069,
+        "lon": -157.8583,
+        "height": 10
+      },
+      "time": "2026-11-01T10:00:00Z",
+      "elevation": -29.33849450142302,
+      "azimuth": 128.02759644668427,
+      "range": 6670.9177140596075,
+      "sunAltitude": -82.30972634308269,
+      "sunlit": false
+    },
+    {
+      "observer": {
+        "name": "San Juan",
+        "lat": 18.4655,
+        "lon": -66.1057,
+        "height": 10
+      },
+      "time": "2026-10-31T19:00:00Z",
+      "elevation": -68.81944216266933,
+      "azimuth": 82.17336956900542,
+      "range": 12138.408637288487,
+      "sunAltitude": 36.44496429575775,
+      "sunlit": false
+    },
+    {
+      "observer": {
+        "name": "San Juan",
+        "lat": 18.4655,
+        "lon": -66.1057,
+        "height": 10
+      },
+      "time": "2026-11-01T00:00:00Z",
+      "elevation": -78.59857845714974,
+      "azimuth": 300.2892957903661,
+      "range": 12734.32739315549,
+      "sunAltitude": -30.659474929437057,
+      "sunlit": true
+    },
+    {
+      "observer": {
+        "name": "San Juan",
+        "lat": 18.4655,
+        "lon": -66.1057,
+        "height": 10
+      },
+      "time": "2026-11-01T05:01:00Z",
+      "elevation": -44.550738326268736,
+      "azimuth": 288.90678005228733,
+      "range": 9268.066755448646,
+      "sunAltitude": -76.67312054185824,
+      "sunlit": true
+    },
+    {
+      "observer": {
+        "name": "San Juan",
+        "lat": 18.4655,
+        "lon": -66.1057,
+        "height": 10
+      },
+      "time": "2026-11-01T10:00:00Z",
+      "elevation": -27.13617856070512,
+      "azimuth": 231.0770784920217,
+      "range": 6267.8279816728855,
+      "sunAltitude": -6.393825470927601,
+      "sunlit": false
+    },
+    {
+      "observer": {
+        "name": "Rio de Janeiro",
+        "lat": -22.9068,
+        "lon": -43.1729,
+        "height": 10
+      },
+      "time": "2026-10-31T19:00:00Z",
+      "elevation": -53.89066623169544,
+      "azimuth": 109.02568313869352,
+      "range": 10590.32355172175,
+      "sunAltitude": 27.39686560281192,
+      "sunlit": false
+    },
+    {
+      "observer": {
+        "name": "Rio de Janeiro",
+        "lat": -22.9068,
+        "lon": -43.1729,
+        "height": 10
+      },
+      "time": "2026-11-01T00:00:00Z",
+      "elevation": -74.8826365593161,
+      "azimuth": 172.79969124681347,
+      "range": 12552.387016253835,
+      "sunAltitude": -36.60482296263125,
+      "sunlit": true
+    },
+    {
+      "observer": {
+        "name": "Rio de Janeiro",
+        "lat": -22.9068,
+        "lon": -43.1729,
+        "height": 10
+      },
+      "time": "2026-11-01T05:01:00Z",
+      "elevation": -61.44144185222102,
+      "azimuth": 276.0233483398596,
+      "range": 11453.978443084832,
+      "sunAltitude": -38.54263669237396,
+      "sunlit": true
+    },
+    {
+      "observer": {
+        "name": "Rio de Janeiro",
+        "lat": -22.9068,
+        "lon": -43.1729,
+        "height": 10
+      },
+      "time": "2026-11-01T10:00:00Z",
+      "elevation": -29.412209193933695,
+      "azimuth": 258.8916413887667,
+      "range": 6704.09198221148,
+      "sunAltitude": 24.58270072250578,
+      "sunlit": false
+    },
+    {
+      "observer": {
+        "name": "Nairobi",
+        "lat": -1.2921,
+        "lon": 36.8219,
+        "height": 1795
+      },
+      "time": "2026-10-31T19:00:00Z",
+      "elevation": -14.911167707915165,
+      "azimuth": 103.28256473155813,
+      "range": 4016.5886792193137,
+      "sunAltitude": -52.83394865723199,
+      "sunlit": false
+    },
+    {
+      "observer": {
+        "name": "Nairobi",
+        "lat": -1.2921,
+        "lon": 36.8219,
+        "height": 1795
+      },
+      "time": "2026-11-01T00:00:00Z",
+      "elevation": -47.23213567951878,
+      "azimuth": 96.64419013071662,
+      "range": 9666.967564267343,
+      "sunAltitude": -46.56908882483261,
+      "sunlit": true
+    },
+    {
+      "observer": {
+        "name": "Nairobi",
+        "lat": -1.2921,
+        "lon": 36.8219,
+        "height": 1795
+      },
+      "time": "2026-11-01T05:01:00Z",
+      "elevation": -77.0001997877157,
+      "azimuth": 49.670074451011885,
+      "range": 12660.005054996935,
+      "sunAltitude": 25.638774478016355,
+      "sunlit": true
+    },
+    {
+      "observer": {
+        "name": "Nairobi",
+        "lat": -1.2921,
+        "lon": 36.8219,
+        "height": 1795
+      },
+      "time": "2026-11-01T10:00:00Z",
+      "elevation": -70.46143014539238,
+      "azimuth": 235.19306415909296,
+      "range": 12259.587018642082,
+      "sunAltitude": 72.94360451867011,
+      "sunlit": false
+    }
+  ],
+  "events": [
+    {
+      "observer": {
+        "name": "Honolulu",
+        "lat": 21.3069,
+        "lon": -157.8583,
+        "height": 10
+      },
+      "kind": "rise",
+      "time": "2026-11-01T00:17:15.740363+00:00"
+    },
+    {
+      "observer": {
+        "name": "Honolulu",
+        "lat": 21.3069,
+        "lon": -157.8583,
+        "height": 10
+      },
+      "kind": "culmination",
+      "time": "2026-11-01T00:19:06.241152+00:00"
+    },
+    {
+      "observer": {
+        "name": "Honolulu",
+        "lat": 21.3069,
+        "lon": -157.8583,
+        "height": 10
+      },
+      "kind": "set",
+      "time": "2026-11-01T00:20:56.943911+00:00"
+    },
+    {
+      "observer": {
+        "name": "Honolulu",
+        "lat": 21.3069,
+        "lon": -157.8583,
+        "height": 10
+      },
+      "kind": "rise",
+      "time": "2026-11-01T01:51:21.355607+00:00"
+    },
+    {
+      "observer": {
+        "name": "Honolulu",
+        "lat": 21.3069,
+        "lon": -157.8583,
+        "height": 10
+      },
+      "kind": "culmination",
+      "time": "2026-11-01T01:53:26.419543+00:00"
+    },
+    {
+      "observer": {
+        "name": "Honolulu",
+        "lat": 21.3069,
+        "lon": -157.8583,
+        "height": 10
+      },
+      "kind": "set",
+      "time": "2026-11-01T01:55:31.733247+00:00"
+    },
+    {
+      "observer": {
+        "name": "Honolulu",
+        "lat": 21.3069,
+        "lon": -157.8583,
+        "height": 10
+      },
+      "kind": "rise",
+      "time": "2026-11-01T03:25:44.893747+00:00"
+    },
+    {
+      "observer": {
+        "name": "Honolulu",
+        "lat": 21.3069,
+        "lon": -157.8583,
+        "height": 10
+      },
+      "kind": "culmination",
+      "time": "2026-11-01T03:27:49.196794+00:00"
+    },
+    {
+      "observer": {
+        "name": "Honolulu",
+        "lat": 21.3069,
+        "lon": -157.8583,
+        "height": 10
+      },
+      "kind": "set",
+      "time": "2026-11-01T03:29:53.448987+00:00"
+    },
+    {
+      "observer": {
+        "name": "Honolulu",
+        "lat": 21.3069,
+        "lon": -157.8583,
+        "height": 10
+      },
+      "kind": "rise",
+      "time": "2026-11-01T05:00:26.094716+00:00"
+    },
+    {
+      "observer": {
+        "name": "Honolulu",
+        "lat": 21.3069,
+        "lon": -157.8583,
+        "height": 10
+      },
+      "kind": "culmination",
+      "time": "2026-11-01T05:02:06.376530+00:00"
+    },
+    {
+      "observer": {
+        "name": "Honolulu",
+        "lat": 21.3069,
+        "lon": -157.8583,
+        "height": 10
+      },
+      "kind": "set",
+      "time": "2026-11-01T05:03:46.737522+00:00"
+    },
+    {
+      "observer": {
+        "name": "San Juan",
+        "lat": 18.4655,
+        "lon": -66.1057,
+        "height": 10
+      },
+      "kind": "rise",
+      "time": "2026-10-31T19:56:06.359010+00:00"
+    },
+    {
+      "observer": {
+        "name": "San Juan",
+        "lat": 18.4655,
+        "lon": -66.1057,
+        "height": 10
+      },
+      "kind": "culmination",
+      "time": "2026-10-31T19:58:09.739431+00:00"
+    },
+    {
+      "observer": {
+        "name": "San Juan",
+        "lat": 18.4655,
+        "lon": -66.1057,
+        "height": 10
+      },
+      "kind": "set",
+      "time": "2026-10-31T20:00:13.461793+00:00"
+    },
+    {
+      "observer": {
+        "name": "San Juan",
+        "lat": 18.4655,
+        "lon": -66.1057,
+        "height": 10
+      },
+      "kind": "rise",
+      "time": "2026-10-31T21:30:37.480935+00:00"
+    },
+    {
+      "observer": {
+        "name": "San Juan",
+        "lat": 18.4655,
+        "lon": -66.1057,
+        "height": 10
+      },
+      "kind": "culmination",
+      "time": "2026-10-31T21:32:42.312485+00:00"
+    },
+    {
+      "observer": {
+        "name": "San Juan",
+        "lat": 18.4655,
+        "lon": -66.1057,
+        "height": 10
+      },
+      "kind": "set",
+      "time": "2026-10-31T21:34:47.272378+00:00"
+    },
+    {
+      "observer": {
+        "name": "San Juan",
+        "lat": 18.4655,
+        "lon": -66.1057,
+        "height": 10
+      },
+      "kind": "rise",
+      "time": "2026-10-31T23:05:06.714397+00:00"
+    },
+    {
+      "observer": {
+        "name": "San Juan",
+        "lat": 18.4655,
+        "lon": -66.1057,
+        "height": 10
+      },
+      "kind": "culmination",
+      "time": "2026-10-31T23:07:08.688308+00:00"
+    },
+    {
+      "observer": {
+        "name": "San Juan",
+        "lat": 18.4655,
+        "lon": -66.1057,
+        "height": 10
+      },
+      "kind": "set",
+      "time": "2026-10-31T23:09:10.344578+00:00"
+    },
+    {
+      "observer": {
+        "name": "Rio de Janeiro",
+        "lat": -22.9068,
+        "lon": -43.1729,
+        "height": 10
+      },
+      "kind": "rise",
+      "time": "2026-11-01T03:58:20.408386+00:00"
+    },
+    {
+      "observer": {
+        "name": "Rio de Janeiro",
+        "lat": -22.9068,
+        "lon": -43.1729,
+        "height": 10
+      },
+      "kind": "culmination",
+      "time": "2026-11-01T03:59:16.789251+00:00"
+    },
+    {
+      "observer": {
+        "name": "Rio de Janeiro",
+        "lat": -22.9068,
+        "lon": -43.1729,
+        "height": 10
+      },
+      "kind": "set",
+      "time": "2026-11-01T04:00:13.457622+00:00"
+    },
+    {
+      "observer": {
+        "name": "Rio de Janeiro",
+        "lat": -22.9068,
+        "lon": -43.1729,
+        "height": 10
+      },
+      "kind": "rise",
+      "time": "2026-11-01T05:31:33.792210+00:00"
+    },
+    {
+      "observer": {
+        "name": "Rio de Janeiro",
+        "lat": -22.9068,
+        "lon": -43.1729,
+        "height": 10
+      },
+      "kind": "culmination",
+      "time": "2026-11-01T05:33:29.171025+00:00"
+    },
+    {
+      "observer": {
+        "name": "Rio de Janeiro",
+        "lat": -22.9068,
+        "lon": -43.1729,
+        "height": 10
+      },
+      "kind": "set",
+      "time": "2026-11-01T05:35:24.835857+00:00"
+    },
+    {
+      "observer": {
+        "name": "Rio de Janeiro",
+        "lat": -22.9068,
+        "lon": -43.1729,
+        "height": 10
+      },
+      "kind": "rise",
+      "time": "2026-11-01T07:05:45.797642+00:00"
+    },
+    {
+      "observer": {
+        "name": "Rio de Janeiro",
+        "lat": -22.9068,
+        "lon": -43.1729,
+        "height": 10
+      },
+      "kind": "culmination",
+      "time": "2026-11-01T07:07:46.150802+00:00"
+    },
+    {
+      "observer": {
+        "name": "Rio de Janeiro",
+        "lat": -22.9068,
+        "lon": -43.1729,
+        "height": 10
+      },
+      "kind": "set",
+      "time": "2026-11-01T07:09:46.276040+00:00"
+    },
+    {
+      "observer": {
+        "name": "Rio de Janeiro",
+        "lat": -22.9068,
+        "lon": -43.1729,
+        "height": 10
+      },
+      "kind": "rise",
+      "time": "2026-11-01T08:40:19.358138+00:00"
+    },
+    {
+      "observer": {
+        "name": "Rio de Janeiro",
+        "lat": -22.9068,
+        "lon": -43.1729,
+        "height": 10
+      },
+      "kind": "culmination",
+      "time": "2026-11-01T08:42:00.331761+00:00"
+    },
+    {
+      "observer": {
+        "name": "Rio de Janeiro",
+        "lat": -22.9068,
+        "lon": -43.1729,
+        "height": 10
+      },
+      "kind": "set",
+      "time": "2026-11-01T08:43:40.999651+00:00"
+    },
+    {
+      "observer": {
+        "name": "Nairobi",
+        "lat": -1.2921,
+        "lon": 36.8219,
+        "height": 1795
+      },
+      "kind": "rise",
+      "time": "2026-10-31T20:23:06.717672+00:00"
+    },
+    {
+      "observer": {
+        "name": "Nairobi",
+        "lat": -1.2921,
+        "lon": 36.8219,
+        "height": 1795
+      },
+      "kind": "culmination",
+      "time": "2026-10-31T20:25:05.847985+00:00"
+    },
+    {
+      "observer": {
+        "name": "Nairobi",
+        "lat": -1.2921,
+        "lon": 36.8219,
+        "height": 1795
+      },
+      "kind": "set",
+      "time": "2026-10-31T20:27:05.185942+00:00"
+    },
+    {
+      "observer": {
+        "name": "Nairobi",
+        "lat": -1.2921,
+        "lon": 36.8219,
+        "height": 1795
+      },
+      "kind": "rise",
+      "time": "2026-11-01T05:53:21.537601+00:00"
+    },
+    {
+      "observer": {
+        "name": "Nairobi",
+        "lat": -1.2921,
+        "lon": 36.8219,
+        "height": 1795
+      },
+      "kind": "culmination",
+      "time": "2026-11-01T05:54:26.433165+00:00"
+    },
+    {
+      "observer": {
+        "name": "Nairobi",
+        "lat": -1.2921,
+        "lon": 36.8219,
+        "height": 1795
+      },
+      "kind": "set",
+      "time": "2026-11-01T05:55:31.254258+00:00"
+    },
+    {
+      "observer": {
+        "name": "Nairobi",
+        "lat": -1.2921,
+        "lon": 36.8219,
+        "height": 1795
+      },
+      "kind": "rise",
+      "time": "2026-11-01T07:26:47.247167+00:00"
+    },
+    {
+      "observer": {
+        "name": "Nairobi",
+        "lat": -1.2921,
+        "lon": 36.8219,
+        "height": 1795
+      },
+      "kind": "culmination",
+      "time": "2026-11-01T07:28:48.010946+00:00"
+    },
+    {
+      "observer": {
+        "name": "Nairobi",
+        "lat": -1.2921,
+        "lon": 36.8219,
+        "height": 1795
+      },
+      "kind": "set",
+      "time": "2026-11-01T07:30:48.516307+00:00"
+    }
+  ]
+}
