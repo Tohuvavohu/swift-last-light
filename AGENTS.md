@@ -1,6 +1,6 @@
 # Project workflow
 
-The user has authorized hosting this project on their personal GitHub using GitHub Pages and scheduled GitHub Actions. The destination is `Tohuvavohu/swift-last-light`, with the public site at `https://tohuvavohu.github.io/swift-last-light/`. Keep changes and deployments within that repository. Do not publish to ChatGPT Sites.
+The user has authorized hosting this project on their personal GitHub using GitHub Pages and scheduled GitHub Actions. The destination is `Tohuvavohu/swift-last-light`, with the public site at `https://tohuvavohu.com/swift-last-light/`. Keep changes and deployments within that repository. Do not publish to ChatGPT Sites.
 
 Keep local development available through the user service `swift-watch-dev` (Vite on port 5173) and the existing Agent Portal forward. Use Node >=22.13. `npm run data:update` refreshes the local static publication; `npm run dev` serves it. The workflow refreshes production independently of open browsers.
 

@@ -2,7 +2,7 @@
 
 A ground-based photography planner for NASA's Neil Gehrels Swift Observatory (NORAD 28485). Built with React, Vite, Leaflet, satellite.js SGP4, and SunCalc. All observing calculations run in the browser. GitHub Pages serves the app and GitHub Actions publishes source updates.
 
-[Open the planner](https://tohuvavohu.github.io/swift-last-light/) · [Source update workflow](https://github.com/Tohuvavohu/swift-last-light/actions/workflows/pages.yml)
+[Open the planner](https://tohuvavohu.com/swift-last-light/) · [Source update workflow](https://github.com/Tohuvavohu/swift-last-light/actions/workflows/pages.yml)
 
 ## Run locally
 

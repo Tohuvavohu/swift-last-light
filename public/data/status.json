@@ -1,11 +1,11 @@
 {
   "status": "degraded",
-  "checkedAt": "2026-10-31T20:42:02.088Z",
+  "checkedAt": "2026-10-31T20:49:15.410Z",
   "note": "Static report from the last source check. Check checkedAt to detect delayed or stopped updates; HTTP 200 alone is not a health signal.",
   "orbit": {
     "epoch": "2026-10-31T10:44:38.816Z",
-    "fetchedAt": "2026-10-31T20:42:01.843Z",
-    "ageHoursAtCheck": 9.956464444444444,
+    "fetchedAt": "2026-10-31T20:49:15.287Z",
+    "ageHoursAtCheck": 10.076831666666667,
     "usableAtCheck": true,
     "snapshot": false
   },
@@ -13,7 +13,7 @@
     {
       "source": "Michigan · SWORD Track 1",
       "status": "live",
-      "fetchedAt": "2026-10-31T20:42:02.088Z",
+      "fetchedAt": "2026-10-31T20:49:15.410Z",
       "issuedAt": "2026-10-30T00:00:00.000Z",
       "orbitEpoch": "2026-10-30T00:37:00.000Z"
     },

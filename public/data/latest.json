@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-10-31T20:42:02.088Z",
+  "checkedAt": "2026-10-31T20:49:15.410Z",
   "tle": {
     "name": "SWIFT",
     "line1": "1 28485U 04047A   26304.44767149  .01372254  13072-2  97041-3 0  9992",
     "line2": "2 28485  20.5470 195.6831 0005005 286.9934  72.9973 16.15126897208442",
     "epoch": "2026-10-31T10:44:38.816Z",
     "source": "CelesTrak",
-    "fetchedAt": "2026-10-31T20:42:01.843Z"
+    "fetchedAt": "2026-10-31T20:49:15.287Z"
   },
   "forecasts": [
     {
@@ -20,7 +20,7 @@
       "confidence": "90% range · 5th–95th percentiles",
       "issuedAt": "2026-10-30T00:00:00.000Z",
       "orbitEpoch": "2026-10-30T00:37:00.000Z",
-      "fetchedAt": "2026-10-31T20:42:02.088Z",
+      "fetchedAt": "2026-10-31T20:49:15.410Z",
       "status": "live",
       "note": "Ensemble median; reentry defined at 80 km. GMAT / NRLMSISE-00 with SWORD solar and geomagnetic forecasts."
     },

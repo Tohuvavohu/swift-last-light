@@ -22,6 +22,9 @@ try {
 // temporary outage cannot overwrite the site with an obsolete bundled seed.
 if (process.env.PREVIOUS_DATA_URL) {
   const url = new URL(process.env.PREVIOUS_DATA_URL);
+  // GitHub metadata can advertise HTTP for an inherited domain even when its
+  // certificate is valid. Always recover the previous publication over HTTPS.
+  if (url.protocol === "http:") url.protocol = "https:";
   if (url.protocol !== "https:")
     throw Error("Previous deployment must use HTTPS.");
   const response = await fetch(url, {
