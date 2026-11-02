@@ -1,46 +1,46 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-10-31T20:49:15.410Z",
+  "checkedAt": "2026-11-02T15:05:21.000Z",
   "tle": {
     "name": "SWIFT",
-    "line1": "1 28485U 04047A   26304.44767149  .01372254  13072-2  97041-3 0  9992",
-    "line2": "2 28485  20.5470 195.6831 0005005 286.9934  72.9973 16.15126897208442",
-    "epoch": "2026-10-31T10:44:38.816Z",
+    "line1": "1 28485U 04047A   26305.92752005  .01891078  38030-2  94541-3 0  9994",
+    "line2": "2 28485  20.5466 183.4106 0005695 298.1201  61.8679 16.20402460208689",
+    "epoch": "2026-11-01T22:15:37.732Z",
     "source": "CelesTrak",
-    "fetchedAt": "2026-10-31T20:49:15.287Z"
+    "fetchedAt": "2026-11-02T14:20:05.204Z"
   },
   "forecasts": [
     {
-      "id": "michigan",
-      "source": "Michigan · SWORD Track 1",
-      "url": "https://csem.engin.umich.edu/SWORD/swift/",
-      "nominal": "2026-11-03T13:56:00.000Z",
-      "earliest": "2026-11-03T01:06:00.000Z",
-      "latest": "2026-11-04T02:45:00.000Z",
-      "confidence": "90% range · 5th–95th percentiles",
-      "issuedAt": "2026-10-30T00:00:00.000Z",
-      "orbitEpoch": "2026-10-30T00:37:00.000Z",
-      "fetchedAt": "2026-10-31T20:49:15.410Z",
-      "status": "live",
-      "note": "Ensemble median; reentry defined at 80 km. GMAT / NRLMSISE-00 with SWORD solar and geomagnetic forecasts."
+      "id": "aerospace",
+      "source": "Aerospace \u00b7 CORDS",
+      "url": "https://aerospace.org/reentries/28485",
+      "nominal": "2026-11-04T09:11:00.000Z",
+      "earliest": "2026-11-03T21:11:00.000Z",
+      "latest": "2026-11-04T21:11:00.000Z",
+      "confidence": "\u00b112 hours \u00b7 confidence not specified",
+      "orbitEpoch": "2026-11-01T22:15:37.732Z",
+      "fetchedAt": "2026-11-02T15:05:21.000Z",
+      "status": "snapshot",
+      "note": "Verified page snapshot, Nov 2, 2026. Automated refresh may be blocked by the publisher."
     },
     {
-      "id": "aerospace",
-      "source": "Aerospace · CORDS",
-      "url": "https://aerospace.org/reentries/28485",
-      "nominal": "2026-11-04T09:30:00Z",
-      "earliest": "2026-11-03T07:30:00Z",
-      "latest": "2026-11-05T11:30:00Z",
-      "confidence": "±26 hours · confidence not specified",
-      "orbitEpoch": "2026-10-30T00:37:05.834Z",
-      "fetchedAt": "2026-10-31T19:04:00Z",
-      "status": "snapshot",
-      "note": "Verified page snapshot, Oct 31. Automated refresh may be blocked by the publisher."
+      "id": "michigan",
+      "source": "Michigan \u00b7 SWORD Track 1",
+      "url": "https://csem.engin.umich.edu/SWORD/swift/",
+      "nominal": "2026-11-03T17:33:00.000Z",
+      "earliest": "2026-11-03T09:31:00.000Z",
+      "latest": "2026-11-04T01:31:00.000Z",
+      "confidence": "90% range \u00b7 5th\u201395th percentiles",
+      "issuedAt": "2026-11-01T00:00:00.000Z",
+      "orbitEpoch": "2026-11-01T10:26:00.000Z",
+      "fetchedAt": "2026-11-02T14:35:10.846Z",
+      "status": "live",
+      "note": "Ensemble median; reentry defined at 80 km. GMAT / NRLMSISE-00 with SWORD solar and geomagnetic forecasts."
     }
   ],
   "errors": [
     {
-      "source": "Aerospace",
+      "source": "aerospace",
       "message": "Source returned HTTP 403."
     }
   ]

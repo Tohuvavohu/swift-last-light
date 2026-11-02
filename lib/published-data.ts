@@ -21,7 +21,10 @@ export type PublishedData = {
 export function initialPublishedData(): PublishedData {
   return {
     schemaVersion: 1,
-    checkedAt: SNAPSHOT_TIME,
+    checkedAt:
+      Date.parse(aerospaceSnapshot.fetchedAt) > Date.parse(SNAPSHOT_TIME)
+        ? aerospaceSnapshot.fetchedAt
+        : SNAPSHOT_TIME,
     tle: snapshotElements(),
     forecasts: [aerospaceSnapshot],
     errors: [],

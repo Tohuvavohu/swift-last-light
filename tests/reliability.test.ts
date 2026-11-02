@@ -1,8 +1,8 @@
+import { aerospaceFixture } from "./fixtures/aerospace";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { passesAtTime, type Pass, type Point } from "../lib/orbit";
 import {
-  aerospaceSnapshot,
   forecastWarning,
   getElements,
   getForecasts,
@@ -32,12 +32,12 @@ test("rolling search drops completed photo windows and passes, fixed search reta
 
 test("forecast outage retains newer successful data and its timestamp, then recovers", () => {
   const previous: Forecast = {
-    ...aerospaceSnapshot,
+    ...aerospaceFixture,
     nominal: "2026-11-04T10:00:00Z",
     fetchedAt: "2026-11-01T00:00:00Z",
     status: "live",
   };
-  const retained = mergeForecasts([previous], [aerospaceSnapshot])[0];
+  const retained = mergeForecasts([previous], [aerospaceFixture])[0];
   assert.equal(retained.nominal, previous.nominal);
   assert.equal(retained.fetchedAt, previous.fetchedAt);
   assert.equal(retained.status, "snapshot");

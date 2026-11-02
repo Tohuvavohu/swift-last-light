@@ -6,13 +6,17 @@ import {
   parsePublishedData,
   publicationStatus,
 } from "../lib/published-data";
-import { parseMichigan, aerospaceSnapshot } from "../lib/sources";
+import { parseMichigan } from "../lib/sources";
+import { aerospaceFixture } from "./fixtures/aerospace";
 
 test("published snapshot validates TLE and timestamps without refreshing their age", () => {
   const original = initialPublishedData();
   const parsed = parsePublishedData(JSON.parse(JSON.stringify(original)));
   assert.equal(parsed.tle.fetchedAt, "2026-10-31T19:04:00.000Z");
-  assert.equal(parsed.forecasts[0].fetchedAt, parsed.tle.fetchedAt);
+  assert.equal(
+    parsed.forecasts[0].fetchedAt,
+    new Date(original.forecasts[0].fetchedAt).toISOString(),
+  );
   assert.throws(
     () => parsePublishedData({ ...original, schemaVersion: 2 }),
     /format/,
@@ -58,7 +62,7 @@ test("independent scheduled runs retain successful provider data during outages"
         forecasts: [
           michigan,
           {
-            ...aerospaceSnapshot,
+            ...aerospaceFixture,
             status: "live",
             nominal: "2026-11-04T10:00:00Z",
             fetchedAt: "2026-10-31T19:15:00Z",
@@ -77,7 +81,7 @@ test("independent scheduled runs retain successful provider data during outages"
     {
       status: "fulfilled",
       value: {
-        forecasts: [aerospaceSnapshot],
+        forecasts: [aerospaceFixture],
         errors: [{ source: "Michigan", message: "503" }],
         fetchedAt: "2026-10-31T19:30:00Z",
       },
@@ -97,4 +101,29 @@ test("independent scheduled runs retain successful provider data during outages"
     publicationStatus({ ...outage, checkedAt: "2026-11-02T00:00:00Z" }).status,
     "unavailable",
   );
+});
+
+
+test("a newer verified snapshot reaches publication during an automated-source outage", () => {
+  const bundled = initialPublishedData();
+  const verified = bundled.forecasts[0];
+  const published = assemblePublishedData(
+    { ...bundled, forecasts: [aerospaceFixture] },
+    { status: "fulfilled", value: bundled.tle },
+    {
+      status: "fulfilled",
+      value: {
+        forecasts: [verified],
+        errors: [{ source: "Aerospace", message: "403" }],
+        fetchedAt: verified.fetchedAt,
+      },
+    },
+    verified.fetchedAt,
+  );
+  assert.equal(published.forecasts[0].nominal, verified.nominal);
+  assert.equal(published.forecasts[0].earliest, verified.earliest);
+  assert.equal(published.forecasts[0].latest, verified.latest);
+  assert.equal(published.forecasts[0].fetchedAt, verified.fetchedAt);
+  assert.equal(published.forecasts[0].status, "snapshot");
+  assert.equal(published.tle.fetchedAt, bundled.tle.fetchedAt);
 });

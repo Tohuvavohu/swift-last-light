@@ -1,8 +1,8 @@
+import { aerospaceFixture } from "./fixtures/aerospace.ts";
 import { chromium } from "@playwright/test";
 import assert from "node:assert/strict";
 import {
   snapshotElements,
-  aerospaceSnapshot,
   parseMichigan,
 } from "../lib/sources.ts";
 import { findPasses, visibleSeconds } from "../lib/orbit.ts";
@@ -31,7 +31,7 @@ const michigan = {
   fetchedAt: new Date(start).toISOString(),
 };
 const aero = {
-  ...aerospaceSnapshot,
+  ...aerospaceFixture,
   nominal: "2026-11-04T10:00:00Z",
   status: "live",
   fetchedAt: "2026-10-31T19:30:00Z",
@@ -61,7 +61,7 @@ try {
             schemaVersion: 1,
             tle: elements,
             checkedAt: new Date(start).toISOString(),
-            forecasts: outage ? [aerospaceSnapshot] : [michigan, aero],
+            forecasts: outage ? [aerospaceFixture] : [michigan, aero],
             errors: outage
               ? [{ source: "Michigan", message: "Source returned HTTP 503." }]
               : [],
