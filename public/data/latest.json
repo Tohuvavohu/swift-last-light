@@ -1,39 +1,40 @@
 {
   "schemaVersion": 1,
-  "checkedAt": "2026-11-02T15:05:21.000Z",
+  "checkedAt": "2026-11-03T15:21:16.737Z",
   "tle": {
     "name": "SWIFT",
-    "line1": "1 28485U 04047A   26305.92752005  .01891078  38030-2  94541-3 0  9994",
-    "line2": "2 28485  20.5466 183.4106 0005695 298.1201  61.8679 16.20402460208689",
-    "epoch": "2026-11-01T22:15:37.732Z",
+    "line1": "1 28485U 04047A   26306.78821559  .02682063 -19393-4  88394-3 0  9996",
+    "line2": "2 28485  20.5446 176.2185 0005654 306.0558  53.9375 16.24595605208822",
+    "epoch": "2026-11-02T18:55:01.826Z",
     "source": "CelesTrak",
-    "fetchedAt": "2026-11-02T14:20:05.204Z"
+    "fetchedAt": "2026-11-03T14:05:03.020Z",
+    "snapshot": false
   },
   "forecasts": [
     {
       "id": "aerospace",
-      "source": "Aerospace \u00b7 CORDS",
+      "source": "Aerospace · CORDS",
       "url": "https://aerospace.org/reentries/28485",
-      "nominal": "2026-11-04T09:11:00.000Z",
-      "earliest": "2026-11-03T21:11:00.000Z",
-      "latest": "2026-11-04T21:11:00.000Z",
-      "confidence": "\u00b112 hours \u00b7 confidence not specified",
-      "orbitEpoch": "2026-11-01T22:15:37.732Z",
-      "fetchedAt": "2026-11-02T15:05:21.000Z",
+      "nominal": "2026-11-04T10:12:00.000Z",
+      "earliest": "2026-11-04T02:12:00.000Z",
+      "latest": "2026-11-04T18:12:00.000Z",
+      "confidence": "±8 hours · confidence not specified",
+      "orbitEpoch": "2026-11-02T18:55:01.827Z",
+      "fetchedAt": "2026-11-03T15:20:15.000Z",
       "status": "snapshot",
-      "note": "Verified page snapshot, Nov 2, 2026. Automated refresh may be blocked by the publisher."
+      "note": "Verified page snapshot, Nov 3, 2026. Automated refresh may be blocked by the publisher."
     },
     {
       "id": "michigan",
-      "source": "Michigan \u00b7 SWORD Track 1",
+      "source": "Michigan · SWORD Track 1",
       "url": "https://csem.engin.umich.edu/SWORD/swift/",
       "nominal": "2026-11-03T17:33:00.000Z",
       "earliest": "2026-11-03T09:31:00.000Z",
       "latest": "2026-11-04T01:31:00.000Z",
-      "confidence": "90% range \u00b7 5th\u201395th percentiles",
+      "confidence": "90% range · 5th–95th percentiles",
       "issuedAt": "2026-11-01T00:00:00.000Z",
       "orbitEpoch": "2026-11-01T10:26:00.000Z",
-      "fetchedAt": "2026-11-02T14:35:10.846Z",
+      "fetchedAt": "2026-11-03T15:21:17.634Z",
       "status": "live",
       "note": "Ensemble median; reentry defined at 80 km. GMAT / NRLMSISE-00 with SWORD solar and geomagnetic forecasts."
     }
