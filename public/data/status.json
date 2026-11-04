@@ -1,25 +1,25 @@
 {
   "status": "degraded",
-  "checkedAt": "2026-11-03T22:21:47.880Z",
+  "checkedAt": "2026-11-04T13:06:22.306Z",
   "note": "Static report from the last source check. Check checkedAt to detect delayed or stopped updates; HTTP 200 alone is not a health signal.",
   "orbit": {
-    "epoch": "2026-11-03T08:09:52.079Z",
-    "fetchedAt": "2026-11-03T18:55:55.863Z",
-    "ageHoursAtCheck": 14.19883361111111,
+    "epoch": "2026-11-03T21:22:35.592Z",
+    "fetchedAt": "2026-11-04T12:20:05.275Z",
+    "ageHoursAtCheck": 15.729642777777778,
     "usableAtCheck": true,
-    "snapshot": true
+    "snapshot": false
   },
   "forecasts": [
     {
       "source": "Aerospace · CORDS",
       "status": "snapshot",
-      "fetchedAt": "2026-11-03T22:21:38.863Z",
-      "orbitEpoch": "2026-11-03T08:09:52.080Z"
+      "fetchedAt": "2026-11-04T13:05:20.000Z",
+      "orbitEpoch": "2026-11-03T21:22:35.593Z"
     },
     {
       "source": "Michigan · SWORD Track 1",
       "status": "live",
-      "fetchedAt": "2026-11-03T22:20:05.220Z",
+      "fetchedAt": "2026-11-04T12:35:07.317Z",
       "issuedAt": "2026-11-03T00:00:00.000Z",
       "orbitEpoch": "2026-11-03T08:09:00.000Z"
     }
@@ -28,10 +28,6 @@
     {
       "source": "aerospace",
       "message": "Source returned HTTP 403."
-    },
-    {
-      "source": "tle",
-      "message": "Source returned HTTP 500."
     }
   ]
 }

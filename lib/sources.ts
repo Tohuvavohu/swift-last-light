@@ -73,14 +73,14 @@ export const aerospaceSnapshot: Forecast = {
   id: "aerospace",
   source: "Aerospace · CORDS",
   url: URLS.aerospace,
-  nominal: "2026-11-04T10:19:00Z",
-  earliest: "2026-11-04T08:19:00Z",
-  latest: "2026-11-04T12:19:00Z",
-  confidence: "±2 hours · confidence not specified",
-  orbitEpoch: "2026-11-03T08:09:52.080Z",
-  fetchedAt: "2026-11-03T22:21:38.863Z",
+  nominal: "2026-11-04T11:56:00Z",
+  earliest: "2026-11-04T08:56:00Z",
+  latest: "2026-11-04T14:56:00Z",
+  confidence: "±3 hours · confidence not specified",
+  orbitEpoch: "2026-11-03T21:22:35.593Z",
+  fetchedAt: "2026-11-04T13:05:20.000Z",
   status: "snapshot",
-  note: "Verified page snapshot, Nov 3, 2026. Automated refresh may be blocked by the publisher.",
+  note: "Verified page snapshot, Nov 4, 2026. Automated refresh may be blocked by the publisher.",
 };
 
 export function utc(value: unknown): string {
